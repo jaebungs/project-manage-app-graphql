@@ -1,6 +1,7 @@
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
 import Header from './components/Header'
 import Client from './components/Client';
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
+import AddClientsModal from './components/AddClientsModal';
 
 // remove cache write error on the browser
 const cache = new InMemoryCache({
@@ -33,6 +34,7 @@ function App() {
       <ApolloProvider client={client}>
         <Header />
         <div className="container">
+          <AddClientsModal />
           <Client />
         </div>
       </ApolloProvider>
