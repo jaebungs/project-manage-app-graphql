@@ -1,6 +1,7 @@
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
 import Header from './components/Header'
 import Client from './components/Client';
+import Projects from './components/Projects';
 import AddClientsModal from './components/AddClientsModal';
 
 // remove cache write error on the browser
@@ -35,6 +36,7 @@ function App() {
         <Header />
         <div className="container">
           <AddClientsModal />
+          <Projects />
           <Client />
         </div>
       </ApolloProvider>
