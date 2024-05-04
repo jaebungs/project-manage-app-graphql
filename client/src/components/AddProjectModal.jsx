@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaList } from 'react-icons/fa'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_PROJECTS } from '../query/projectQuery'
+import { ADD_PROJECT } from '../mutation/projectMutation'
 import { GET_CLIENTS } from '../query/clientQuery'
 import Spinner from './Spinner'
 
@@ -10,6 +11,17 @@ export default function AddProjectModal() {
     const [ description, setDescription ]= useState('')
     const [ clientId, setClientId ]= useState('')
     const [ status, setStatus ] = useState('new')
+
+    const [addProject] = useMutation(ADD_PROJECT, {
+        variables: { name, description, status, clientId},
+        update(cache, { data: { addProject } }) {
+            const { projects } = cache.readQuery({ query: GET_PROJECTS })
+            cache.writeQuery({
+                query: GET_PROJECTS,
+                data: { projects: [...projects, addProject] }
+            })
+        }
+    })
     
     // Get clients to select
     const { loading, error, data } = useQuery(GET_CLIENTS)
@@ -17,7 +29,13 @@ export default function AddProjectModal() {
     const onSubmit = (e) => {
         e.preventDefault()
 
-        console.log(name, description, status)
+        if (name === '' || description === '' || status === '') return alert('Please fill all the fields')
+        addProject(name, description, status, clientId)
+
+        setName('')
+        setDescription('')
+        setStatus('new')
+        setClientId('')
     }
 
     if (loading) return <Spinner />
@@ -62,7 +80,7 @@ export default function AddProjectModal() {
                                             </div>
                                             <div className='mb-3'>
                                                 <label className='form-label'>Client</label>
-                                                <select className='form-select' id="clientId" value={clientId} onChange={(e) => setClientId(e.target.id)}>
+                                                <select className='form-select' id="clientId" value={clientId} onChange={(e) => setClientId(e.target.value)}>
                                                     <option value="">Select Client</option>
                                                     { data.clients.map(client => (
                                                         <option key={client.id} value={client.id}>{client.name}</option>
